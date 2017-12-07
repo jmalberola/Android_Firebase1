@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Firebase</string>
+
+    <!-- Nodos Firebase -->
+    <string name="nodo_discos">discos</string>
+
+    <!-- Campos de los nodos -->
+    <string name="campo_titulo">titulo</string>
+    <string name="campo_anyo">anyo</string>
+
+</resources>
