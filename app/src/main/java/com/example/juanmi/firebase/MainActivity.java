@@ -23,7 +23,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     EditText text_titulo, text_anyo;
-    Button boton_anyadir, boton_mostrar;
+    Button boton_anyadir, boton_mostrar, boton_modificar, boton_borrar;
     ListView lista;
 
     DatabaseReference bbdd;
@@ -37,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
         text_anyo = (EditText) findViewById(R.id.editText2);
         boton_anyadir = (Button) findViewById(R.id.button);
         boton_mostrar = (Button) findViewById(R.id.button2);
+        boton_modificar = (Button) findViewById(R.id.button3);
+        boton_borrar = (Button) findViewById(R.id.button4);
         lista = (ListView)findViewById(R.id.listView);
 
         bbdd = FirebaseDatabase.getInstance().getReference(getString(R.string.nodo_discos));
@@ -113,6 +115,73 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
+
+            }
+        });
+
+       boton_modificar.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view){
+
+                String titulo = text_titulo.getText().toString();
+
+                if(!TextUtils.isEmpty(titulo)){
+                    Query q=bbdd.orderByChild(getString(R.string.campo_titulo)).equalTo(titulo);
+
+                    q.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            for(DataSnapshot datasnapshot: dataSnapshot.getChildren()){
+                                String clave=datasnapshot.getKey();
+                                bbdd.child(clave).child(getString(R.string.campo_anyo)).setValue(text_anyo.getText().toString());
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+                    Toast.makeText(MainActivity.this, "El año del disco "+titulo+" se ha modificado con éxito", Toast.LENGTH_LONG).show();
+                }
+                else{
+                    Toast.makeText(MainActivity.this, "Debes de introducir un título", Toast.LENGTH_LONG).show();
+                }
+
+            }
+        });
+
+        boton_borrar.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view){
+                String titulo = text_titulo.getText().toString();
+
+                if(!TextUtils.isEmpty(titulo)){
+                    Query q=bbdd.orderByChild(getString(R.string.campo_titulo)).equalTo(titulo);
+
+                    q.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            for(DataSnapshot datasnapshot: dataSnapshot.getChildren()){
+                                String clave=datasnapshot.getKey();
+                                DatabaseReference ref = bbdd.child(clave);
+
+                                ref.removeValue();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+                    Toast.makeText(MainActivity.this, "El disco "+titulo+" se ha borrado con éxito", Toast.LENGTH_LONG).show();
+                }
+                else{
+                    Toast.makeText(MainActivity.this, "Debes de introducir un título", Toast.LENGTH_LONG).show();
+                }
 
             }
         });
